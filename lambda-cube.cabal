@@ -7,11 +7,11 @@ cabal-version: 2.2
 name:           lambda-cube
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/githubuser/lambda-cube#readme>
-homepage:       https://github.com/githubuser/lambda-cube#readme
-bug-reports:    https://github.com/githubuser/lambda-cube/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2024 Author name here
+homepage:       https://github.com/blastwind/lambda-cube#readme
+bug-reports:    https://github.com/blastwind/lambda-cube/issues
+author:         Andrew Chen
+maintainer:     andrewchen14250@gmail.com
+copyright:      2024 Andrew Chen
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/lambda-cube
+  location: https://github.com/blastwind/lambda-cube
 
 library
   exposed-modules:
@@ -35,6 +35,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , parsec
   default-language: Haskell2010
 
 executable lambda-cube-exe
