@@ -34,9 +34,12 @@ ghc-options:
 - -Wredundant-constraints
 
 library:
-  source-dirs: src
+  source-dirs: 
+  - src
   dependencies:
-  - parsec
+  - megaparsec
+  - containers
+
 
 executables:
   lambda-cube-exe:
@@ -49,6 +52,7 @@ executables:
     dependencies:
     - lambda-cube
 
+
 tests:
   lambda-cube-test:
     main:                Spec.hs
@@ -59,3 +63,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - lambda-cube
+    - hspec
+    - containers
