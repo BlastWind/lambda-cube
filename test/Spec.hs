@@ -1,2 +1,12 @@
+import Test.Hspec
+import Untyped.Spec (untypedSpec)
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = hspec spec
+
+spec :: Spec 
+spec = describe "Combined" $ do
+    untypedSpec
+
+
+

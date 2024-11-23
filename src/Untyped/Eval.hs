@@ -1,18 +1,10 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module Untyped.Eval (module Untyped.Eval) where
+module Untyped.Eval (reduce) where
 import Untyped.Types
 
 import Data.List (nub)
 import Data.Tree (Tree (..))
-
-data EvalResult
-  = -- BetaNormal: reduced to something irreducible, early return
-    BetaNormal Term
-  | -- WeaklyNormal: reduced to a term that is irreducible
-    WeaklyNormal Term
-  | -- Divergent: all reduction paths gives the same term back
-    Divergent Term
 
 (∈) :: (Foldable t, Eq a) => a -> t a -> Bool
 x ∈ xs = x `elem` xs
@@ -49,7 +41,7 @@ oneStepReduction (Lam v q) = [Lam v q' | q' <- oneStepReduction q]
 oneStepReduction (App (Lam v p) q) = subst v q p : [App l q | l <- oneStepReduction (Lam v p)] ++ [App (Lam v p) q' | q' <- oneStepReduction q]
 oneStepReduction (App p q) = [App p' q | p' <- oneStepReduction p] ++ [App p q' | q' <- oneStepReduction q]
 
--- Catches cyclic non-termination
+-- Lazy tree, potentially divergent
 completeReduction :: Term -> Tree Term
 completeReduction t = go t []
   where
@@ -62,29 +54,32 @@ completeReduction t = go t []
           newHistory = t : history
        in Node t [go r newHistory | r <- validReductions]
 
-multiStepReduction :: Int -> Term -> Tree Term
-multiStepReduction n t = go n t []
+-- If node N ∈ ancestors(N), remove N
+withoutCycles :: Eq a => Tree a -> Tree a
+withoutCycles = go []
   where
-    go 0 t _ = Node t []
-    go n t history =
-      let nextReductions = oneStepReduction t
-          uniqueReductions = nub nextReductions
-          -- Only continue paths that we haven't seen (or else there's a cycle!)
-          validReductions = filter (`notElem` history) uniqueReductions
-          -- Add current term to history for recursive calls
-          newHistory = t : history
-       in Node t [go (n - 1) r newHistory | r <- validReductions]
+    go :: Eq a => [a] -> Tree a -> Tree a
+    go history (Node root children) =
+      let isCycle = root `elem` history
+          newHistory = root : history
+       in if isCycle 
+          then Node root []
+          else Node root (map (go newHistory) children)
 
--- Pretty printing with cycle detection
-prettyPrintTree :: Tree Term -> String
-prettyPrintTree = go 0 []
-  where
-    go indent history node =
-      let currentTerm = rootLabel node
-          isCycle = currentTerm `elem` history
-          newHistory = currentTerm : history
-       in replicate indent ' '
-            ++ show currentTerm
-            ++ (if isCycle then " (cycle detected)" else "")
-            ++ "\n"
-            ++ concatMap (go (indent + 1) newHistory) (subForest node)
+getLeafNodes :: Tree a -> [a]
+getLeafNodes (Node x []) = [x]
+getLeafNodes (Node _ ts) = concatMap getLeafNodes ts
+
+-- Attempt to reduce a lambda expression to its beta normal form, lazily!
+-- There are 3 outcomes:
+-- 1) You get a beta normal form
+-- 2) You get a weakly normal form because your expression does not have a beta normal form
+-- 3) The term diverges, so your computation never halts
+reduce :: Term -> Term
+reduce term = 
+    -- Final reductions. `completeReduction` is lazy.
+    let reductionPaths = getLeafNodes (withoutCycles (completeReduction term))
+    in if null reductionPaths 
+       then term
+       -- According to Church-Rosser, if there is a normal form, any path will get us there
+       else head reductionPaths

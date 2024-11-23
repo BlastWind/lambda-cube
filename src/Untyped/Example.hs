@@ -5,6 +5,17 @@ import Untyped.Types
 import Data.Either (fromRight)
 import Untyped.ReadPrint (parseTerm)
 
+var1_str :: String
+var1_str = "x"
+
+var1 :: Term
+var1 = fromRight (Var "error") (parseTerm var1_str)
+
+var2_str :: String
+var2_str = "λx.y"
+
+var2 :: Term
+var2 = fromRight (Var "error") (parseTerm var2_str)
 
 ex1_str :: String
 ex1_str = "(λx. (λy. (y x) a) z) v"
@@ -33,9 +44,14 @@ ex2_str = "(λu. v)((λx. x x)(λx. x x))"
 ex2 :: Term
 ex2 = fromRight (Var "error") (parseTerm ex2_str)
 
-churchGen_str :: String
-churchGen_str = "(λn.λf.λx.((f n) f) x)(λf.λx.f(f(f(f x))))"
+churchNine_str :: String
+churchNine_str = "(λm.λn.λf.m (n f)) (λf.λx.f (f (f x))) (λf.λx.f ( f (f x)))"
+  where 
+    mult = "(λn.λf.λx.f (n f x))"
+    three = "(λf.λx.f(f(f x)))"
 
-churchGen :: Term
-churchGen = fromRight (Var "error") (parseTerm churchGen_str)
+churchNine :: Term
+churchNine = fromRight (Var "error") (parseTerm churchNine_str)
+
+
 

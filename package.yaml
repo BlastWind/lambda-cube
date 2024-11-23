@@ -39,6 +39,7 @@ library:
   dependencies:
   - megaparsec
   - containers
+  - pretty
 
 
 executables:
