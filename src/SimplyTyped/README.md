@@ -1,0 +1,1 @@
+Simply typed lambda calculus. This is an improvement over untyped lambda calculus. Types are explicitly annotated. Type checking is performed, disallowing things like self application.

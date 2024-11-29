@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       Lib
+      SimplyTyped.ReadPrint
+      SimplyTyped.Types
       Untyped
       Untyped.Eval
       Untyped.Example
@@ -42,6 +44,7 @@ library
       base >=4.7 && <5
     , containers
     , megaparsec
+    , pretty
   default-language: Haskell2010
 
 executable lambda-cube-exe
