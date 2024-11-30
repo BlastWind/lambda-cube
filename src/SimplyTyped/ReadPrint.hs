@@ -3,7 +3,7 @@
 
 {-# HLINT ignore "Use $>" #-}
 
-module SimplyTyped.ReadPrint (parseTerm, parseExprTest, parseTreeTest, pPrint, render) where
+module SimplyTyped.ReadPrint (parseTerm, pPrint, render) where
 
 import Control.Monad (replicateM_, void)
 import Data.Tree
@@ -107,12 +107,6 @@ parseTree p = go 0 p
       root <- p
       children <- many (go (identLevel + 1) p)
       return $ Node root children
-
-parseExprTest :: String -> IO ()
-parseExprTest = parseTest (sc *> expr <* eof)
-
-parseTreeTest :: String -> IO ()
-parseTreeTest = parseTest (sc *> parseTree expr <* eof)
 
 prettyTerm :: Term -> Doc
 prettyTerm = prettyPrec 0

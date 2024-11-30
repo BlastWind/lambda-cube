@@ -26,7 +26,10 @@ source-repository head
 library
   exposed-modules:
       Lib
+      SimplyTyped.Eval
+      SimplyTyped.Example
       SimplyTyped.ReadPrint
+      SimplyTyped.TypeCheck
       SimplyTyped.Types
       Untyped
       Untyped.Eval

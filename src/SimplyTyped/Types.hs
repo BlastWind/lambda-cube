@@ -1,3 +1,5 @@
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE StandaloneDeriving #-}
 module SimplyTyped.Types (module SimplyTyped.Types) where
 
 type Variable = String
@@ -23,7 +25,21 @@ data Term
   | Lam Variable Type Term -- Note that variables have types in STLC!
   deriving (Eq, Show)
 
-data Phase 
-  = Unparsed String
-  | Parsed Term
-  | TypeChecked Term
+data Parsed
+data TypeChecked
+data Normalized
+
+-- To be serious about type safety, we shouldn't export this.
+-- Instead, make `parse`, `typ`, and `reduce` the sole and smart constructors.
+data ProcessedTerm phase where
+    ParsedTerm :: Term -> ProcessedTerm Parsed
+    TypeCheckedTerm :: ProcessedTerm Parsed -> ProcessedTerm TypeChecked
+    NormalizedTerm :: ProcessedTerm TypeChecked -> ProcessedTerm Normalized
+deriving instance Eq (ProcessedTerm phase)
+deriving instance Show (ProcessedTerm phase)
+
+-- Now getting the term is simple for any phase
+getTerm :: ProcessedTerm phase -> Term
+getTerm (ParsedTerm t) = t
+getTerm (TypeCheckedTerm t _ _) = t
+getTerm (NormalizedTerm t _) = t
